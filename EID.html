@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيد الاتحاد الـ 54 | احتفالنا</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        beige: '#f3f0eb',
+                        'beige-dark': '#e6e1d6',
+                        brown: '#4a3b32',
+                        'brown-light': '#8c7b6f',
+                        accent: '#C36520',
+                        yellow: '#ffcf40',
+                        green: '#00732f',
+                        red: '#ce1126',
+                        black: '#000000'
+                    },
+                    fontFamily: {
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html {
+            /* Enable Scroll Snap */
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f3f0eb;
+            color: #4a3b32;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sections snap to start */
+        section, header, footer {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+        }
+
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f3f0eb;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C36520;
+            border-radius: 4px;
+        }
+
+        /* Loader Styles */
+        .loader-wrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #4a3b32;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loader-text {
+            color: #f3f0eb;
+            opacity: 0; /* Starts hidden, handled by GSAP */
+            transform: translateY(20px);
+        }
+
+        .loader-progress-container {
+            width: 200px;
+            height: 2px;
+            background: rgba(243, 240, 235, 0.2);
+            margin-top: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .loader-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #C36520;
+            border-radius: 4px;
+        }
+
+        /* Audio Visualizer Bars */
+        .bar {
+            width: 6px;
+            background: #C36520;
+            margin: 0 2px;
+            animation: sound 0ms -800ms linear infinite alternate;
+            transition: height 0.1s;
+            height: 5px;
+        }
+        
+        .bar-container.playing .bar {
+            animation-duration: 400ms;
+        }
+        
+        @keyframes sound {
+            0% { height: 5px; opacity: 0.35; }
+            100% { height: 40px; opacity: 1; }
+        }
+
+        /* Custom heights for specific bars to look random */
+        .bar:nth-child(1)  { animation-delay: -1.2s; }
+        .bar:nth-child(2)  { animation-delay: -2.4s; }
+        .bar:nth-child(3)  { animation-delay: -0.5s; }
+        .bar:nth-child(4)  { animation-delay: -3.1s; }
+        .bar:nth-child(5)  { animation-delay: -1.8s; }
+        .bar:nth-child(6)  { animation-delay: -0.2s; }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-accent selection:text-white">
+
+    <!-- Loader -->
+    <div class="loader-wrap" id="loader">
+        <div class="text-center relative">
+            <!-- Added ID for counter animation -->
+            <h1 id="count-up" class="loader-text font-bold text-8xl mb-2 text-beige">0</h1>
+            <p class="loader-text text-xl font-light tracking-widest uppercase">عاماً من المجد</p>
+        </div>
+        <!-- Progress Bar -->
+        <div class="loader-progress-container loader-text">
+            <div class="loader-progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-between items-center transition-all duration-300" id="navbar">
+        <div class="logo font-bold text-2xl tracking-tighter mix-blend-difference text-brown z-50">
+            شركتنا
+        </div>
+        <div class="hidden md:flex gap-8 text-lg font-medium mix-blend-difference text-brown">
+            <a href="#welcome" class="hover:text-accent transition-colors">رسالتنا</a>
+            <a href="#anthem" class="hover:text-accent transition-colors">النشيد</a>
+            <a href="#slide" class="hover:text-accent transition-colors">العرض</a>
+            <a href="#breakfast" class="hover:text-accent transition-colors">الفطور</a>
+        </div>
+        <button class="hidden md:block border border-current px-6 py-2 rounded-full hover:bg-brown hover:text-white transition-all duration-300">
+            54
+        </button>
+    </nav>
+
+    <!-- SECTION 1: Company Message (Hero) -->
+    <header id="welcome" class="relative h-screen flex items-center justify-center overflow-hidden px-6">
+        
+        <!-- Floating Particles Background -->
+        <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+            <div class="particle bg-accent/20 rounded-full w-32 h-32 top-1/4 right-1/4 animate-float" style="animation-delay: 0s;"></div>
+            <div class="particle border border-brown/20 w-48 h-48 top-2/3 left-1/4 rotate-45 animate-float" style="animation-delay: 2s;"></div>
+            <div class="particle bg-green/10 rounded-full w-24 h-24 bottom-1/4 right-1/3 animate-float" style="animation-delay: 1s;"></div>
+        </div>
+
+        <div class="absolute inset-0 z-0">
+            <!-- UAE Flag Overlay Gradients -->
+            <div class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-red/10 to-transparent mix-blend-multiply"></div>
+            <div class="absolute top-0 w-full h-1/3 bg-gradient-to-b from-green/5 to-transparent mix-blend-multiply"></div>
+            
+            <img 
+                src="https://images.unsplash.com/photo-1578323671806-69275086d081?q=80&w=2080&auto=format&fit=crop" 
+                class="w-full h-full object-cover opacity-30 parallax-bg origin-center"
+                id="hero-image"
+                alt="UAE Texture"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-beige via-beige/50 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 text-center space-y-8 mt-20 max-w-4xl">
+            <div class="inline-block border border-brown/30 px-4 py-1 rounded-full text-sm font-bold tracking-widest uppercase mb-4 text-brown reveal-text">
+                رسالة تهنئة
+            </div>
+            
+            <h1 class="text-6xl md:text-8xl font-bold leading-tight tracking-tighter text-brown reveal-text">
+                كل عام ووطننا <br /> <span class="text-accent inline-block">يعانق المجد</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-brown/80 leading-relaxed font-light reveal-text max-w-2xl mx-auto">
+                بمناسبة عيد الاتحاد الـ 54، تتقدم شركتنا بأسمى آيات التهاني والتبريكات. نحتفل اليوم بروح الاتحاد التي تجمعنا، وبالمستقبل المشرق الذي نبنيه معاً.
+            </p>
+
+            <div class="pt-8 reveal-text">
+                <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                    <span class="text-4xl animate-bounce">🇦🇪</span>
+                    <p class="text-lg font-bold">دام عزك يا وطن</p>
+                    <span class="text-4xl animate-bounce" style="animation-delay: 0.5s;">🇦🇪</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-brown/50">
+            ↓
+        </div>
+    </header>
+
+    <!-- SECTION 2: Animation & Sound -->
+    <section id="anthem" class="relative h-screen py-20 px-6 bg-brown text-beige overflow-hidden flex flex-col items-center justify-center">
+        <!-- Abstract Background Animation -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-beige rounded-full animate-spin-slow"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] border border-dashed border-beige rounded-full animate-spin-slow" style="animation-direction: reverse;"></div>
+        </div>
+
+        <div class="relative z-10 text-center space-y-12">
+            <h2 class="text-4xl md:text-6xl font-bold">نغمات الفخر</h2>
+            <p class="text-xl opacity-80 max-w-lg mx-auto">استمع إلى المقطوعة الموسيقية الخاصة باحتفالنا.</p>
+
+            <!-- Audio Player UI -->
+            <div class="bg-beige/10 backdrop-blur-md border border-beige/20 p-8 rounded-2xl w-full max-w-md mx-auto shadow-2xl">
+                
+                <!-- Visualizer -->
+                <div class="h-16 flex justify-center items-end gap-1 mb-8 bar-container" id="visualizer">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex justify-center items-center gap-6">
+                    <button id="playBtn" class="w-20 h-20 bg-accent rounded-full flex items-center justify-center hover:bg-white hover:text-accent transition-all duration-300 shadow-lg group">
+                        <!-- Play Icon -->
+                        <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 ml-1">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+                        </svg>
+                        <!-- Pause Icon (Hidden default) -->
+                        <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 hidden">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <p class="mt-6 text-sm opacity-60 font-mono" id="track-status">اضغط للتشغيل</p>
+            </div>
+            
+            <!-- Hidden Audio Element -->
+            <!-- REPLACE 'YOUR_GITHUB_LINK_HERE' with your raw github mp3 link -->
+            <!-- Example: https://github.com/username/repo/blob/main/song.mp3?raw=true -->
+            <audio id="audioPlayer" loop>
+                <source src="https://github.com/ahakagei/testfiles/raw/refs/heads/main/640d271c-f1f4-4fe3-acc2-f82ab12388de.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </section>
+
+    <!-- SECTION 3: The Slide (Presentation) -->
+    <section id="slide" class="py-32 h-screen flex flex-col justify-center bg-beige-dark overflow-hidden px-6 md:px-24">
+        <div class="mb-10 text-center">
+            <span class="text-accent font-bold tracking-widest uppercase">مشاركتنا</span>
+            <h2 class="text-5xl md:text-6xl font-bold text-brown mt-2 mb-4">العرض التقديمي</h2>
+            <p class="text-brown/60 text-xl max-w-3xl mx-auto">نظرة على إنجازاتنا ومسيرتنا في ظل هذا الاتحاد العظيم.</p>
+        </div>
+
+        <div class="relative w-full max-w-5xl mx-auto h-[50vh] shadow-2xl rounded-2xl overflow-hidden border-[10px] border-white">
+            <iframe 
+                src="https://1drv.ms/p/c/66a9b1496af2be79/IQSBHIoIYVf4RL-feVVdHxlgAWqbeZBDPq8ZqdnW5PoFRNo" 
+				width="402" 
+				height="327" 
+				frameborder="0" 
+				scrolling="no"
+                allowfullscreen="true" 
+                class="w-full h-full bg-white"
+                title="Official Union Day Presentation"
+            >
+                <div class="flex items-center justify-center h-full text-brown">
+                    <p>جاري تحميل العرض...</p>
+                </div>
+            </iframe>
+        </div>
+    </section>
+
+    <!-- SECTION 4: Breakfast (Call to Action) -->
+    <section id="breakfast" class="relative h-screen px-6 flex items-center justify-center overflow-hidden bg-white">
+        <!-- Decor Elements -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-yellow/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+            
+            <div class="md:w-1/2 space-y-8 text-center md:text-right">
+                <h2 class="text-6xl md:text-8xl font-bold text-brown leading-tight">
+                    تفضلوا <br/> <span class="text-accent">على الفطور</span>
+                </h2>
+                <div class="w-24 h-2 bg-accent mx-auto md:mx-0 rounded-full"></div>
+                <p class="text-2xl text-brown/70 leading-relaxed">
+                    يسرنا دعوتكم الآن للتوجه إلى منطقة البوفيه. دعونا نتشارك لقمة الهناء ونحتفل بهذه اللحظات الجميلة كعائلة واحدة.
+                    <br/><br/>
+                    <span class="font-bold text-brown">صحة وعافية!</span>
+                </p>
+                
+                <a href="#" class="inline-flex items-center justify-center gap-3 bg-brown text-beige px-8 py-4 rounded-full hover:bg-accent transition-colors duration-300 shadow-lg group">
+                    <span>قائمة الطعام</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 group-hover:rotate-180 transition-transform duration-500">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="md:w-1/2 relative">
+                <div class="relative aspect-square max-w-md mx-auto">
+                    <!-- Rotating Text Ring -->
+                    <div class="absolute inset-0 animate-spin-slow">
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <path id="circlePath" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="transparent" />
+                            <text font-size="11" font-weight="bold" fill="#C36520" letter-spacing="2">
+                                <textPath href="#circlePath" startOffset="0%">
+                                    صحة • عافية • هناء • سعادة • لمة •
+                                </textPath>
+                            </text>
+                        </svg>
+                    </div>
+                    
+                    <!-- Center Image -->
+                    <div class="absolute inset-4 rounded-full overflow-hidden border-8 border-white shadow-2xl">
+                        <img 
+                            src="https://images.unsplash.com/photo-1547496502-ffa222d7943c?q=80&w=1974&auto=format&fit=crop" 
+                            class="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
+                            alt="Breakfast"
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brown text-beige pt-16 pb-8 px-6 text-center">
+        <div class="border-t border-white/10 pt-8">
+            <p class="opacity-60 text-sm">&copy; 2024 جميع الحقوق محفوظة لشركتنا.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- ENHANCED Loader & Intro Animation ---
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            
+            // Initial State setup
+            gsap.set('#hero-image', { scale: 1.4 }); // Start zoomed in
+            
+            // 1. Reveal Loader Text & Bar
+            tl.to('.loader-text', { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" });
+
+            // 2. Animate Number & Progress Bar simultaneously
+            const counter = { val: 0 };
+            const numberElement = document.getElementById('count-up');
+            
+            tl.to(counter, {
+                val: 54,
+                duration: 2.5, // Made longer for dramatic effect
+                ease: "power1.inOut",
+                onUpdate: function() {
+                    numberElement.innerText = Math.floor(counter.val);
+                }
+            }, "-=0.2")
+            .to('#progress-bar', {
+                width: '100%',
+                duration: 2.5,
+                ease: "power1.inOut"
+            }, "<"); // Run at start of previous animation
+
+            // 3. Pulse the "54"
+            tl.to('#count-up', { scale: 1.2, color: '#C36520', duration: 0.4, ease: "back.out(1.7)" });
+
+            // 4. Hide Loader & Zoom Out Hero
+            tl.to('.loader-text', { opacity: 0, y: -20, duration: 0.4, ease: "power3.in" })
+              .to('#loader', { y: '-100%', duration: 1.2, ease: "power4.inOut" })
+              
+              // 5. Reveal Hero Content (Elastic effect)
+              .to('#hero-image', { scale: 1, duration: 2, ease: "power2.out" }, "-=1.0") // Start zooming out while loader slides
+              .from('.reveal-text', { 
+                  y: 100, 
+                  opacity: 0, 
+                  duration: 1.5, 
+                  stagger: 0.2, 
+                  ease: "elastic.out(1, 0.75)" 
+              }, "-=1.5");
+        });
+
+        // --- Audio Player Logic ---
+        const playBtn = document.getElementById('playBtn');
+        const audio = document.getElementById('audioPlayer');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const visualizer = document.getElementById('visualizer');
+        const trackStatus = document.getElementById('track-status');
+        
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+                visualizer.classList.add('playing');
+                trackStatus.textContent = "جاري التشغيل...";
+            } else {
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                visualizer.classList.remove('playing');
+                trackStatus.textContent = "متوقف مؤقتاً";
+            }
+        });
+
+        // --- Parallax Effects ---
+        gsap.to('.parallax-bg', {
+            yPercent: 30,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "header",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
+
+        // --- Section Reveal Animations ---
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+            gsap.from(section.children, {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                stagger: 0.2,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 70%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+    </script>
+</body>
+</html>
